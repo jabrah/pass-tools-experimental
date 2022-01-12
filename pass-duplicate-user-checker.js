@@ -45,33 +45,6 @@ async function findUser(id) {
   return data.hits.hits[0]['_source'];
 }
 
-function getSubmissionsForUsers(users) {
-  const results = {
-    "valid": [],
-    "invalid": []
-  };
-  
-  const userResolver = users.map((user) => {
-    const query = `submitter:"${user}"+pi:"${user}"+copi:"${user}"`;
-    const url = `${ES_URL}?default_operator=OR&q=${query}`;
-
-    return fetch(url)
-      .then(resp => resp.json())
-      .then((data) => {
-        if (data.hits.total > 0) {
-          results.valid.push(user);
-        } else {
-          results.invalid.push(user);
-        }
-      });
-  });
-
-  Promise.all(userResolver)
-    .then(() => {
-      console.log(results);
-    });
-}
-
 ENV = parseEnv();
 
 if (ENV.HELP_MODE) {
@@ -93,7 +66,6 @@ if (ENV.CSV_MODE) {
   process.exit(2);
 }
 
-// getSubmissionsForUsers();
 if (ENV.SQL_MODE) {
   processDB().then(results => console.log(results));
 }
