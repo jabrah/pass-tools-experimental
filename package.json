@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "better-sqlite3": "^7.4.6",
     "node-fetch": "^2.6.6"
   }
 }
