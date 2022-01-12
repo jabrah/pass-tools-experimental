@@ -2,11 +2,9 @@
   "name": "pass-ops-experimental",
   "version": "0.0.0",
   "type": "module",
-  "description": "Simple tool to help check duplicate user references in PASS",
-  "main": "pass-duplicate-user-checker.js",
-  "scripts": {
-    "start": "node ./index.js"
-  },
+  "description": "Simple tool to help check duplicate entity references in PASS",
+  "main": "pass-duplicate-checker.js",
+  "scripts": {},
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -14,6 +12,6 @@
     "node-fetch": "^2.6.6"
   },
   "bin": {
-    "check-pass-users": "./pass-duplicate-user-checker.js"
+    "check-pass-duplicates": "./pass-duplicate-checker.js"
   }
 }
