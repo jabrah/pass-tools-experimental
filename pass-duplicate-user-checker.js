@@ -12,22 +12,31 @@ let ENV;
 let ES_URL;
 
 function parseEnv() {
-  if (!process.env.ES_URL) {
-    process.env.ES_URL = 'http://localhost:9200/pass/_search';
-  }
+  const [,, ...args] = process.argv;
 
   const env = {
     ES_URL: process.env.ES_URL,
     CSV_MODE: process.env.CSV || false,
     SQL_MODE: process.env.SQL || true,
-    DATA_PATH: process.env.DATA || undefined
+    DATA_PATH: process.env.DATA || undefined,
+    TYPE: 'User'
   };
 
   ES_URL = env.ES_URL;
 
-  const [,, ...args] = process.argv;
   if (args.includes('--help')) {
     env.HELP_MODE = true;
+  }
+  if (args.includes('--type')) {
+    const index = args.indexOf('--type');
+    env.TYPE = args[index + 1];
+  }
+
+  if (!process.env.ES_URL) {
+    process.env.ES_URL = 'http://localhost:9200/pass/_search';
+  }
+  if (!process.env.TYPE) {
+    process.env.TYPE = env.TYPE;
   }
 
   return env;
@@ -67,5 +76,5 @@ if (ENV.CSV_MODE) {
 }
 
 if (ENV.SQL_MODE) {
-  processDB().then(results => console.log(results));
+  processDB(ENV.TYPE).then((results) => console.log(JSON.stringify(results, null, 2)));
 }
