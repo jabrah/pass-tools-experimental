@@ -2,16 +2,18 @@
   "name": "pass-ops-experimental",
   "version": "0.0.0",
   "type": "module",
-  "description": "",
-  "main": "index.js",
+  "description": "Simple tool to help check duplicate user references in PASS",
+  "main": "pass-duplicate-user-checker.js",
   "scripts": {
-    "start": "node ./index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "better-sqlite3": "^7.4.6",
     "node-fetch": "^2.6.6"
+  },
+  "bin": {
+    "check-pass-users": "./pass-duplicate-user-checker.js"
   }
 }

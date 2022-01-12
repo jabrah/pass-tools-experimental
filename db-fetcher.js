@@ -50,13 +50,18 @@ export function processDB() {
   // Remove potential duplicate user IDs
   const targets = [...new Set(rows.map(row => row.target))];
 
-  targets.forEach((user) => {
-    if (isValidUser(user)) {
-      result.valid.push(user);
-    } else {
-      result.invalid.push(user);
-    }
-  });
+  const resolvers = new Map();
+  targets.forEach(user => resolvers.set(
+    user,
+    isValidUser(user).then((valid) => {
+      if (valid) {
+        result.valid.push(user);
+      } else {
+        result.invalid.push(user);
+      }
+    })
+  ));
 
-  return result;
+  return Promise.all(Array.from(resolvers.values()))
+    .then(() => Promise.resolve(result));
 }

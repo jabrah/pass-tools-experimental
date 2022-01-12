@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Assumptions:
  *  - You have opened SSH tunnels to FCREPO and ELASTICSEARCH
@@ -23,7 +25,7 @@ function parseEnv() {
 
   ES_URL = env.ES_URL;
 
-  const args = process.argv.slice(2);
+  const [,, ...args] = process.argv;
   if (args.includes('--help')) {
     env.HELP_MODE = true;
   }
@@ -93,5 +95,5 @@ if (ENV.CSV_MODE) {
 
 // getSubmissionsForUsers();
 if (ENV.SQL_MODE) {
-  processDB();
+  processDB().then(results => console.log(results));
 }
