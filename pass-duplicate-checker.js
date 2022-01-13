@@ -6,7 +6,7 @@
  */
 
 import fetch from 'node-fetch';
-import { processDB } from './db-fetcher.js';
+import { processDB } from './src/db-fetcher.js';
 
 let ENV;
 let ES_URL;
