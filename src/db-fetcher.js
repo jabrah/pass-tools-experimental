@@ -1,4 +1,4 @@
-import { findReferencedEntities, isValidUser } from './helper.js';
+import { reportRefs } from './helper.js';
 import Database from 'better-sqlite3';
 
 const QUERY = 'SELECT target FROM dupes WHERE target NOT LIKE \'%\' || source AND passType = ?';
@@ -44,31 +44,8 @@ export function processDB(type = 'User') {
   const rows = stmt.all(type);
   db.close();
 
-  // Now we can process the data
-  const result = {};
   // Remove potential duplicate user IDs
   const targets = [...new Set(rows.map(row => row.target))];
 
-  targets.forEach(target => result[target] = {});
-
-  const resolvers = new Map();
-  targets.forEach(id => resolvers.set(
-    id,
-    // isValidUser(id).then((valid) => result[id].valid = valid)
-    isValidUser(id).then((refs) => result[id].referencedBy = refs)
-  ));
-
-  const referenceFinders = new Map();
-  targets.forEach(id => referenceFinders.set(
-    id,
-    findReferencedEntities(id).then(refs => result[id].references = refs)
-  ));
-
-  const promises = [
-    ...Array.from(resolvers.values()),
-    ...Array.from(referenceFinders.values())
-  ];
-
-  return Promise.all(promises)
-    .then(() => Promise.resolve(result));
+  return reportRefs(targets);
 }

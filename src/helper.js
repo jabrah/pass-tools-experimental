@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
  * 
  * @param {string} id URI
  * @param {string} type passType
+ * @returns {Promise}
  */
 function getRefQuery(id, type) {
   switch (type) {
@@ -12,9 +13,28 @@ function getRefQuery(id, type) {
       return `submitter:"${id}"+pi:"${id}"+copi:"${id}"+user:"${id}"+performedBy:"${id}"`;
     case 'Funder':
       return `primaryFunder:"${id}"+directFunder:"${id}"`;
+    case 'Submission':
+      return `submission:"${id}"`;
+    case 'Grant':
+      return `grants:"${id}"`;
     default:
       throw new Error('Invalid passType. Can\'t generate search query.');
   }
+}
+
+function expandProperties(object, props = []) {
+  const res = [];
+  props
+    .filter(prop => object.hasOwnProperty[prop])
+    .forEach((prop) => {
+      const value = object[prop];
+      if (Array.isArray(value)) {
+        res.push(...value);
+      } else {
+        res.push(value);
+      }
+    });
+  return res;
 }
 
 export function isValidUser(id) {
@@ -43,13 +63,58 @@ export function findReferencedEntities(id) {
   return fetch(url)
     .then(resp => resp.json())
     .then((data) => {
-      const docs = data.hits.hits.map(hit => hit._source);
-      switch (TYPE) {
-        case 'Funder':
-          return docs.map(funder => funder.policy);
-        default:
-          return Promise.resolve([]);
-      }
+      const docs = data.hits.hits
+        .map((hit) => {
+          const doc = hit._source;
+          const res = [];
+
+          switch (TYPE) {
+            case 'Funder':
+              res.push(...expandProperties(doc, ['policy']));
+              break;
+            case 'Submission':
+              res.push(...expandProperties(doc, ['grants', 'repositories', 'publication', 'submitter']));
+              break;
+            case 'Grant':
+              res.push(...expandProperties(doc, ['primaryFunder', 'directFunder', 'pi', 'coPis']));
+              break;
+            }
+
+            return res.filter(item => !!item);
+        });
+
+        return Promise.resolve(docs);
     })
     .catch(err => console.error(err));
+}
+
+export function reportRefs(ids = []) {
+  if (!Array.isArray(ids)) {
+    ids = [ids];
+  }
+
+  const results = {};
+  ids.forEach(id => results[id] = {});
+
+  const refByResolvers = new Map();
+  const referenceFinders = new Map();
+
+  ids.forEach((id) => {
+    refByResolvers.set(
+      id,
+      isValidUser(id).then((refs) => results[id].referencedBy = refs)
+    );
+    referenceFinders.set(
+      id,
+      findReferencedEntities(id).then(refs => results[id].references = refs)
+    );
+  });
+
+  const promises = [
+    ...Array.from(refByResolvers.values()),
+    ...Array.from(referenceFinders.values())
+  ];
+
+  return Promise.all(promises)
+    .then(() => Promise.resolve(results));
 }
