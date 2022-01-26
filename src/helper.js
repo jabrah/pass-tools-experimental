@@ -37,7 +37,17 @@ function expandProperties(object, props = []) {
   return res;
 }
 
-export function isValidUser(id) {
+/**
+ * Get a list of IDs of entities that that point to the specified entity. If we
+ * were to delete the specified entity, doing so would break the relationships found
+ * here. These references suggest (but doesn't guarantee) that the specified entity 
+ * is likely "valid" and should not be deleted
+ * 
+ * @param {string} id entity ID
+ * @returns {Promise} list of IDs of entities that reference the specified entity
+ *  (incoming references)
+ */
+function getReferences(id) {
   const ES_URL = process.env.ES_URL;
   const TYPE = process.env.TYPE;
   if (!ES_URL) {
@@ -51,7 +61,14 @@ export function isValidUser(id) {
     .catch(err => console.error(err));
 }
 
-export function findReferencedEntities(id) {
+/**
+ * Get a list of entities that the specified entity points to
+ * 
+ * @param {string} id entity ID
+ * @returns {Promise} list of entity IDs that the specified entity references
+ *  (outgoing references)
+ */
+function findReferencedEntities(id) {
   const ES_URL = process.env.ES_URL;
   const TYPE = process.env.TYPE;
 
@@ -102,7 +119,7 @@ export function reportRefs(ids = []) {
   ids.forEach((id) => {
     refByResolvers.set(
       id,
-      isValidUser(id).then((refs) => results[id].referencedBy = refs)
+      getReferences(id).then((refs) => results[id].referencedBy = refs)
     );
     referenceFinders.set(
       id,

@@ -1,5 +1,6 @@
 import { reportRefs } from './helper.js';
 import Database from 'better-sqlite3';
+import { PassType } from './pass-type.js';
 
 const QUERY = 'SELECT target FROM dupes WHERE target NOT LIKE \'%\' || source AND passType = ?';
 
@@ -30,7 +31,7 @@ const QUERY = 'SELECT target FROM dupes WHERE target NOT LIKE \'%\' || source AN
  *    }
  * }
  */
-export function processDB(type = 'User') {
+export function processDB(type = PassType.User) {
   const filepath = process.env.DATA;
 
   console.log(`Using database: "${filepath}"`);
