@@ -4,19 +4,21 @@
 # then delete the object
 #
 # Example:
-#   delete-duplicate-users.sh --dry-run -u=username -password=password -h=localhost http://repo.example.com/user/1
+#   delete-duplicate.sh --dry-run -t=User -u=username -password=password -h=localhost http://repo.example.com/user/1
 # 
 # OPTIONS:
 #   * -u|--username : repository username
 #   * -p|--password : repository password
+#   * -t|--type     : 
 #   * -h|--fcrepo-local-host : local hostname for the repository
-#   * --es_url : URL for search index
-#   * -n|--dry-run : dry run of the command. Fetch and show data, but do not execute the deletion
-#   * -f : do not prompt the user to confirm the deletion
+#   * --es_url      : URL for search index
+#   * -n|--dry-run  : dry run of the command. Fetch and show data, but do not execute the deletion
+#   * -f            : do not prompt the user to confirm the deletion
 
 # Some defaults for optional args
 FCREPO_LOCAL_HOST=localhost
 ES_PREFIX=http://localhost:9200/pass/_search
+TYPE="User"
 
 for i in "$@"; do
   case $i in
@@ -44,6 +46,10 @@ for i in "$@"; do
       FORCE=TRUE
       shift
       ;;
+    -t=*|--type=*)
+      TYPE="${i#*=}"
+      shift
+      ;;
     -*|--*)
       echo "Unknown option $i"
       exit 1
@@ -61,11 +67,28 @@ echo "Localized: $FCREPO_LOCAL_HOST"
 echo "Elasticsearch: $ES_PREFIX"
 echo "Dry run: $DRY_RUN"
 echo "Force: $FORCE"
+echo "Type: $TYPE"
 
 if [[ -z "$FCREPO_USER" || -z "$FCREPO_PASS" ]]; then
   echo "Please set --username and --password arguments";
   exit 1;
 fi
+
+case $TYPE in
+  "User")
+    ES_QUERY="submitter:\"$ID\"+pi:\"$ID\"+copi:\"$ID\"+user:\"$ID\"+performedBy:\"$ID\""
+    ;;
+  "Funder")
+    ES_QUERY="primaryFunder:\"$ID\"+directFunder:\"$ID\""
+    ;;
+  "Grant")
+    ES_QUERY="grants:\"$ID\""
+    ;;
+  *)
+    echo "Unknown type: $TYPE"
+    exit 1
+    ;;
+esac
 
 LOCALIZED_URL=${ID/fcrepo-test.pass.local/"$FCREPO_LOCAL_HOST"}
 
@@ -73,8 +96,8 @@ echo "Showing entity at the given URL ($LOCALIZED_URL):"
 curl -s -u ${FCREPO_USER}:${FCREPO_PASS} -H "Accept: application/ld+json" "$LOCALIZED_URL" | jq
 
 echo "References to this entity (from Elasticsearch):"
-echo "$ES_PREFIX?default_operator=OR&q=submitter:\"$ID\"+pi:\"$ID\"+copi:\"$ID\""
-curl -s "$ES_PREFIX?default_operator=OR&q=submitter:\"$ID\"+pi:\"$ID\"+copi:\"$ID\"" | jq .hits
+echo "$ES_PREFIX?default_operator=OR&q=${ES_QUERY}"
+curl -s "$ES_PREFIX?default_operator=OR&q=${ES_QUERY}" | jq .hits
 
 if [[ $DRY_RUN == TRUE ]]; then
   echo "Dry-run. Would execute:"

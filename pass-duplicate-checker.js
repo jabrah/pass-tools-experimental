@@ -4,8 +4,6 @@
  * Assumptions:
  *  - You have opened SSH tunnels to FCREPO and ELASTICSEARCH
  */
-
-import fetch from 'node-fetch';
 import { processDB } from './src/db-fetcher.js';
 
 let ENV;
@@ -40,18 +38,6 @@ function parseEnv() {
   }
 
   return env;
-}
-
-async function findUser(id) {
-  const userSearch = `${ES_URL}?default_operator=AND&q=@id:"${id}"`;
-  const resp = await fetch(userSearch);
-  const data = await resp.json();
-
-  if (data.hits.total === 0) {
-    return;
-  }
-
-  return data.hits.hits[0]['_source'];
 }
 
 ENV = parseEnv();
