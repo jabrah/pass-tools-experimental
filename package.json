@@ -9,7 +9,7 @@
   "license": "ISC",
   "dependencies": {
     "better-sqlite3": "^7.4.6",
-    "node-fetch": "^2.6.6"
+    "node-fetch": "^2.6.7"
   },
   "bin": {
     "check-pass-duplicates": "./pass-duplicate-checker.js"
