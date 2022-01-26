@@ -76,20 +76,20 @@ echo "References to this entity (from Elasticsearch):"
 echo "$ES_PREFIX?default_operator=OR&q=submitter:\"$ID\"+pi:\"$ID\"+copi:\"$ID\""
 curl -s "$ES_PREFIX?default_operator=OR&q=submitter:\"$ID\"+pi:\"$ID\"+copi:\"$ID\"" | jq .hits
 
-if [[ $FORCE != TRUE ]]; then
-  read -p "Confirm delete? ($LOCALIZED_URL) [Yn]" confirm
-  confirm=${confirm:-Y}
-
-  if [[ $confirm != [Yy] ]]; then
-    echo "Aborting"
-    exit 1
-  fi
-fi
-
 if [[ $DRY_RUN == TRUE ]]; then
   echo "Dry-run. Would execute:"
   echo "curl -u $FCREPO_USER:$FCREPO_PASS -X DELETE \"$LOCALIZED_URL\""
 else
+  if [[ $FORCE != TRUE ]]; then
+    read -p "Confirm delete? ($LOCALIZED_URL) [Yn]" confirm
+    confirm=${confirm:-Y}
+
+    if [[ $confirm != [Yy] ]]; then
+      echo "Aborting"
+      exit 1
+    fi
+  fi
+
   curl -u $FCREPO_USER:$FCREPO_PASS -X DELETE "$LOCALIZED_URL"
   # Optionally check FCREPO and/or ES for this object?
 fi
