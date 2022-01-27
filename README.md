@@ -1,9 +1,13 @@
-Some small utilities intended to help manage data in PASS.
+Simple tools to help check duplicate entity references in PASS
 
 # pass-duplicate-checker
 
-This node tool tries to clean up the the data captured by this tool: https://github.com/emetsger/dupe-checker
 Running this will report duplicate entities in the database with a given (PASS) type. For each entity that is reported, you will also see a list of other entities that reference the duplicate entity, as well as a list of other entities that are refereced by the duplicate entity. The tool is meant to aid data checking by filtering the data from the Dupe Checker and showing associated references, as found in Elasticsearch.
+
+## Requirements
+
+This node tool tries to clean up the the data captured by this tool: https://github.com/emetsger/dupe-checker. See 
+[PASS Duplicates error checking](https://github.com/jabrah/pass-tools-experimental/wiki/PASS-Duplicates-error-checking) for some notes on running that tool.
 
 Like the Dupe Checker, this tool assumes that Elasticsearch is "correct" and in sync with Fedora.
 
@@ -65,7 +69,7 @@ Using database: "../pass_test_duplicates_1-21-2022.db"
 
 # delete-duplicates.sh
 
-This script is intended to aid the deletion of individual entities in Fedora **(in it's current state, only in TEST)**. The script will display the JSON representation of the entity in question, as well as any other entities that reference the specified entity. It will then ask for confirmation to delete and if given a positive confirmation, will issue a DELETE request to Fedora.
+This script is intended to aid the deletion of individual entities in Fedora **(in it's current state, only in TEST)**. The script will display the JSON representation of an entity, given its ID (URI), as well as any other entities that reference the specified entity. It will then ask for confirmation to delete and if given a positive confirmation, will issue a DELETE request to Fedora.
 
 As with the above tool, this also assumes an SSH tunnel to various services in PASS TEST.
 

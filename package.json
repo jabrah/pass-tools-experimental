@@ -1,8 +1,8 @@
 {
   "name": "pass-ops-experimental",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
-  "description": "Simple tool to help check duplicate entity references in PASS",
+  "description": "Simple tools to help check duplicate entity references in PASS",
   "main": "pass-duplicate-checker.js",
   "scripts": {},
   "author": "",
