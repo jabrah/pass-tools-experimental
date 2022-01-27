@@ -99,11 +99,7 @@ function findReferencedEntities(id) {
 
             return res.filter(item => !!item);
         });
-        console.log('###############');
-        console.log(data.hits.hits);
-        // console.log(expandProperties(data.hits.hits[0], ['primaryFunder']));
-        console.log(docs);
-        console.log('###############');
+
         return Promise.resolve(docs);
     })
     .catch(err => console.error(err));
