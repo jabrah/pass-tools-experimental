@@ -25,15 +25,15 @@ function getRefQuery(id, type) {
 function expandProperties(object, props = []) {
   const res = [];
   props
-    .filter(prop => object.hasOwnProperty[prop])
-    .forEach((prop) => {
-      const value = object[prop];
-      if (Array.isArray(value)) {
-        res.push(...value);
-      } else {
-        res.push(value);
-      }
-    });
+  .filter(prop => object.hasOwnProperty(prop))
+  .forEach((prop) => {
+    const value = object[prop];
+    if (Array.isArray(value)) {
+      res.push(...value);
+    } else {
+      res.push(value);
+    }
+  });
   return res;
 }
 
@@ -99,7 +99,11 @@ function findReferencedEntities(id) {
 
             return res.filter(item => !!item);
         });
-
+        console.log('###############');
+        console.log(data.hits.hits);
+        // console.log(expandProperties(data.hits.hits[0], ['primaryFunder']));
+        console.log(docs);
+        console.log('###############');
         return Promise.resolve(docs);
     })
     .catch(err => console.error(err));
