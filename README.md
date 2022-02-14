@@ -6,7 +6,7 @@ Running this will report duplicate entities in the database with a given (PASS) 
 
 ## Requirements
 
-This node tool tries to clean up the the data captured by this tool: https://github.com/emetsger/dupe-checker. See 
+This node tool tries to clean up the the data captured by this tool: https://github.com/OA-PASS/dupe-checker. See 
 [PASS Duplicates error checking](https://github.com/jabrah/pass-tools-experimental/wiki/PASS-Duplicates-error-checking) for some notes on running that tool.
 
 Like the Dupe Checker, this tool assumes that Elasticsearch is "correct" and in sync with Fedora.
@@ -93,5 +93,5 @@ Example:
 ```
 
 # Resources
-* [Dupe Checker](https://github.com/emetsger/dupe-checker)
+* [Dupe Checker](https://github.com/OA-PASS/dupe-checker)
 * [PASS Duplicates error checking](https://github.com/jabrah/pass-tools-experimental/wiki/PASS-Duplicates-error-checking)
