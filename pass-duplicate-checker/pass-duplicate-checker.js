@@ -37,6 +37,12 @@ function parseEnv() {
     process.env.TYPE = env.TYPE;
   }
 
+  const max_concurrent = process.env.MAX_CONCURRENT;
+  if (!!max_concurrent && typeof max_concurrent !== 'number') {
+    console.log('### MAX_CONCURRENT must be an integer (default: 5) ###');
+    process.exit(3);
+  }
+
   return env;
 }
 
@@ -52,12 +58,12 @@ console.log(ENV);
 console.log();
 
 if (!ENV.DATA_PATH) {
-  throw new Error('Please specify where to find data using DATA: \n  DATA=<./path/to/data> node ./index.js');
+  console.log('Please specify where to find data using DATA: \n  DATA=<./path/to/data> node ./index.js');
   process.exit(1);
 }
 
 if (ENV.CSV_MODE) {
-  throw new Error('CSV mode not implemented');
+  console.log('CSV mode not implemented');
   process.exit(2);
 }
 

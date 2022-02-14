@@ -105,33 +105,52 @@ function findReferencedEntities(id) {
     .catch(err => console.error(err));
 }
 
-export function reportRefs(ids = []) {
+async function fetchData(ids) {
+  const results = {};
+  ids.forEach(id => results[id] = {});
+
+  const inRefPending = new Map();
+  const outRefPending = new Map();
+
+  ids.forEach((id) => {
+    // console.log(`  > Looking for references for '${id}'`);
+
+    const inRef = getReferences(id)
+      .then((refs) => results[id].referencedBy = refs)
+      .catch(error => console.log(error));
+    const outRef = findReferencedEntities(id)
+      .then(refs => results[id].references = refs)
+      .catch(error => console.log(error));
+
+    inRefPending.set(id, inRef);
+    outRefPending.set(id, outRef);
+  });
+
+  return Promise.all([
+    ...Array.from(inRefPending.values()),
+    ...Array.from(outRefPending.values())
+  ])
+    .then(() => results)
+    .catch(error => console.log(error));
+}
+
+export async function reportRefs(ids = []) {
+  const max_concurrent = parseInt(process.env.MAX_CONCURRENT) || 5;
+
   if (!Array.isArray(ids)) {
     ids = [ids];
   }
 
-  const results = {};
+  let results = {};
   ids.forEach(id => results[id] = {});
 
-  const refByResolvers = new Map();
-  const referenceFinders = new Map();
+  for (let i = 0; i < ids.length; i += max_concurrent) {
+    // Array from 0 to max_concurrent
+    const indexes = [...Array(max_concurrent).keys()];
 
-  ids.forEach((id) => {
-    refByResolvers.set(
-      id,
-      getReferences(id).then((refs) => results[id].referencedBy = refs)
-    );
-    referenceFinders.set(
-      id,
-      findReferencedEntities(id).then(refs => results[id].references = refs)
-    );
-  });
+    const refs = await fetchData(indexes.map(index => ids[i + index]));
+    results = Object.assign(results, refs);
+  }
 
-  const promises = [
-    ...Array.from(refByResolvers.values()),
-    ...Array.from(referenceFinders.values())
-  ];
-
-  return Promise.all(promises)
-    .then(() => Promise.resolve(results));
+  return Promise.resolve(results);
 }
