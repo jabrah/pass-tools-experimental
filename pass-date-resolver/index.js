@@ -7,7 +7,7 @@
  *  Update the row in the DB
  */
 
-import { getDistinctTargets, update } from './src/db-helper.js';
+import { getDistinctTargets, getTarget, update } from './src/db-helper.js';
 import { checkUri, fetchTimestamps } from './src/fcrepo.js';
 
 function processEnv() {
@@ -33,6 +33,7 @@ async function main() {
     const withTimes = await checkUri(target);
     console.log(`    > Found ${target}: ${JSON.stringify(withTimes)}`);
     update(withTimes);
+    getTarget(target); // If you want to print the updated DB row
   }
 
 }

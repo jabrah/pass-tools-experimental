@@ -49,3 +49,13 @@ export function update(targetWithTimes) {
 
   console.log(`    - Update complete (${targetWithTimes.target}) :: (${JSON.stringify(info)})`);
 }
+
+export function getTarget(target) {
+  const db = getDB();
+
+  const row = db
+    .prepare('SELECT * FROM filtered_dupes WHERE target = ?')
+    .get(target);
+  
+  console.log(JSON.stringify(row));
+}

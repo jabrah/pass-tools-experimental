@@ -27,7 +27,8 @@ export function checkUri(uri) {
 }
 
 function getProp(prop, textData) {
-  const match = textData.search(prop);
+  const regex = `(${prop})\\s+`;
+  const match = textData.search(regex);
 
   if (match < 0) { // Property not found
     return;
