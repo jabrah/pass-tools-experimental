@@ -1,0 +1,8 @@
+> Fetching: http://localhost:8080/fcrepo/rest/publications/05/6b/c5/e8/056bc5e8-08b5-4d8a-babb-6f1947e4b716
+{
+  target: 'http://fcrepo-prod.pass.local:8080/fcrepo/rest/publications/05/6b/c5/e8/056bc5e8-08b5-4d8a-babb-6f1947e4b716',
+  created: undefined,
+  createdBy: undefined,
+  lastModified: undefined,
+  lastModifiedBy: undefined
+}
